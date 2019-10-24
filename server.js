@@ -9,7 +9,7 @@ var axios = require("axios");
 var cheerio = require("cheerio");
 
 // Require all models
-// var db = require("./models");
+var db = require("./models");
 
 var PORT = 3000;
 
@@ -27,35 +27,43 @@ app.use(express.json());
 app.use(express.static("public"));
 
 
-
-// Connect to the Mongo DB
-// mongoose.connect("mongodb://localhost/unit18Populater", { useNewUrlParser: true });
-
-
-app.get("/scrape", function(req, res) {
+app.get("/scrape", function (req, res) {
   // First, we grab the body of the html with axios
-  axios.get("https://old.reddit.com/r/BlackPeopleTwitter/").then(function(response) {
+  axios.get("https://old.reddit.com/r/BlackPeopleTwitter/").then(function (response) {
     // Then, we load that into cheerio and save it to $ for a shorthand selector
     var $ = cheerio.load(response.data);
     // console.log("THERESA LOOK", $)
-    var title = $("a.title").text();
+    var title;
+    var link;
 
-    
 
-    $("a.title").each(function(i, element) {
-      console.log($(this).text());
-      console.log("https://old.reddit.com"+$(this).attr("href"));
 
-      
+    $("a.title").each(function (i, element) {
+      title = $(this).text();
+      link = "https://old.reddit.com" + $(this).attr("href");
+
+      db.Post.create({
+        title,
+        link
+      })
+        .then(function (dbShowThread) {
+          // View the added result in the console
+          console.log(dbShowThread);
+        })
+        .catch(function (err) {
+          // If an error occurred, log it
+          console.log(err);
+        });
     }
-    
-    )
 
- 
+    )
+    
+
+
 
     // Now, we grab every h2 within an article tag, and do the following:
     // $("article h2").each(function(i, element) {
-      
+
 
     //   // Create a new Article using the `result` object built from scraping
     //   db.Article.create(result)
@@ -75,12 +83,12 @@ app.get("/scrape", function(req, res) {
 });
 
 // Route for getting all Articles from the db
-app.get("/articles", function(req, res) {
+app.get("/getInfo", function (req, res) {
   // TODO: Finish the route so it grabs all of the articles
 });
 
 // Route for grabbing a specific Article by id, populate it with it's note
-app.get("/articles/:id", function(req, res) {
+app.get("/articles/:id", function (req, res) {
   // TODO
   // ====
   // Finish the route so it finds one article using the req.params.id,
@@ -89,7 +97,7 @@ app.get("/articles/:id", function(req, res) {
 });
 
 // Route for saving/updating an Article's associated Note
-app.post("/articles/:id", function(req, res) {
+app.post("/articles/:id", function (req, res) {
   // TODO
   // ====
   // save the new note that gets posted to the Notes collection
@@ -97,12 +105,11 @@ app.post("/articles/:id", function(req, res) {
   // and update it's "note" property with the _id of the new note
 });
 
+// Connect to the Mongo DB
+var CONNECTION_URI = process.env.MONGODB_URI || "mongodb://localhost/BPT";
+mongoose.connect(CONNECTION_URI, { useNewUrlParser: true });
 
-// var MONGODB_URI = process.env.MONGODB_URI || "mongodb://localhost/mongoHeadlines";
-
-// mongoose.connect(MONGODB_URI);
-
-app.listen(PORT, function() {
+app.listen(PORT, function () {
   console.log("App running on port " + PORT + "!");
 });
 
