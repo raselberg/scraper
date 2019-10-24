@@ -27,6 +27,11 @@ app.use(express.json());
 app.use(express.static("public"));
 
 
+app.get("/",function (req, res) {
+  
+})
+
+
 app.get("/scrape", function (req, res) {
   // First, we grab the body of the html with axios
   axios.get("https://old.reddit.com/r/BlackPeopleTwitter/").then(function (response) {

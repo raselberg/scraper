@@ -42,6 +42,10 @@ $(document).on("click", "p", function() {
     });
 });
 
+console.log("/articles")
+
+
+
 // When you click the savenote button
 $(document).on("click", "#savenote", function() {
   // Grab the id associated with the article from the submit button
@@ -58,13 +62,15 @@ $(document).on("click", "#savenote", function() {
       body: $("#bodyinput").val()
     }
   })
-    // With that done
-    .then(function(data) {
-      // Log the response
-      console.log(data);
-      // Empty the notes section
-      $("#notes").empty();
-    });
+  
+
+    // // With that done
+    // .then(function(data) {
+    //   // Log the response
+    //   console.log(data);
+    //   // Empty the notes section
+    //   $("#notes").empty();
+    // });
 
   // Also, remove the values entered in the input and textarea for note entry
   $("#titleinput").val("");
